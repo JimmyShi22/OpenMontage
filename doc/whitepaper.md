@@ -1,6 +1,6 @@
 # OpenMontage Whitepaper
 
-**Version 2.0 — Git for Movies**
+**Version 1.0 — Git for Movies**
 
 ---
 
@@ -560,6 +560,6 @@ OpenMontage transforms filmmaking from a centralized, capital-intensive industry
 
 ---
 
-**Version**: 2.0  
+**Version**: 1.0  
 **Last Updated**: 2026-02-24  
 **Authors**: OpenMontage Core Team

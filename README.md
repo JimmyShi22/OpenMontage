@@ -14,8 +14,6 @@ Think GitHub for films. Directors upload scripts, creators submit video segments
 
 Traditional filmmaking is centralized capital + director dictatorship. OpenMontage makes films work like open-source software: decentralized collaboration where quality wins over connections. Revenue flows to whoever's work is actually in the final cut.
 
-Technical enabler: Standard Library (dependency packages ensuring visual consistency across AI-generated segments).
-
 ---
 
 ## How It Works
@@ -35,12 +33,6 @@ Films evolve over time — better segments can replace old ones, shifting revenu
 - **[Product Mechanism](doc/product-mechanism.md)** — How the system works (workflows, version control)
 - **[Tokenomics](doc/tokenomics.md)** — NFT ownership and revenue distribution
 - **[Whitepaper](doc/whitepaper.md)** — Full technical architecture
-
----
-
-## Contributing
-
-We welcome contributions of all kinds — video segments, scripts, tooling, and ideas. See our documentation for more details.
 
 ---
 

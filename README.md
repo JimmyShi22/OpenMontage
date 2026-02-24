@@ -33,16 +33,6 @@ Films become open-source projects. Quality wins, not connections. Revenue flows 
 
 ---
 
-## Example Earnings
-
-Your 30-second segment in a 90-minute film earning $10k/month:
-
-**You earn:** $44/month (as long as your segment stays in the film)
-
-Someone submits a better version and gets voted in? They start earning, you stop. Keep competing to stay in the cut.
-
----
-
 ## Learn More
 
 - **[Product Mechanism](doc/product-mechanism.md)** — How the system works (workflows, version control)

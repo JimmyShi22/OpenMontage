@@ -4,110 +4,63 @@
   <img src="logo.jpg" alt="OpenMontage Logo" width="200"/>
 </p>
 
-**Git for Movies**
+**Git for Movies — Collaborative filmmaking with AI**
 
-OpenMontage lets anyone contribute to films like developers contribute to open-source projects. Upload a script, break it into shots, and watch the community create segments. The best work gets merged, creators earn based on screen time, and films evolve as better versions replace old ones.
-
----
-
-## The Problem
-
-AI tools can generate video now, but collaborative AI filmmaking doesn't work yet:
-
-- **Everyone's protagonist looks different** — 10 creators, 10 different faces
-- **No reason to contribute** — video generation costs money and time
-- **Films stay frozen** — can't improve after release, even when AI gets better
+Think GitHub for films. Directors upload scripts, creators submit video segments, community votes on the best, and everyone earns based on what gets used.
 
 ---
 
-## How We Solve It
+## How It Works
 
-### Standard Library
-Every film ships with dependencies (like npm, but for movies):
-- Character LoRA models → everyone's protagonist looks identical
-- Style guides → consistent lighting and color
-- Voice models → same voice across all segments
+1. **Director** uploads a script and breaks it into shots
+2. **Creators** generate video segments using AI tools (Sora, Runway, etc.)
+3. **Community** votes to pick the best version of each shot
+4. **Platform** assembles the film from winning segments
+5. **Revenue** splits automatically: 80% to creators, 15% to director, 5% to voters
 
-Pull the library, generate your segment, submit a PR. Simple.
-
-### Crypto Economics
-- Each segment = NFT with authorship proof
-- 80% of revenue flows to creators based on screen time
-- Better segment replaces yours? Revenue shifts to them
-- Keep competing, keep earning
+Films evolve over time — better segments can replace old ones, shifting revenue to whoever's currently in the final cut.
 
 ---
 
-## Quick Start
+## The Key Innovation: Standard Library
 
-**For Filmmakers:**
-1. Upload script, split into shots
-2. Train character LoRAs, build your Standard Library
-3. Launch the repo, let creators work
+**Problem:** Different people using AI tools make the same character look completely different.
 
-**For Contributors:**
-1. Find a film, claim a shot
-2. Download the Standard Library
-3. Generate video (Sora, Runway, whatever)
-4. Submit → get minted as Clip NFT
+**Solution:** Every film includes a "dependency package" (like npm):
+- Character appearance models (LoRA)
+- Art style guides
+- Voice models
 
-**For Everyone:**
-Vote on segments. Best one wins. Earn 5% of revenue for curating.
+Everyone pulls the same library → visual consistency across all contributions.
 
 ---
 
-## Revenue Split
+## Example Earnings
 
-| Who | Share | How |
-|-----|-------|-----|
-| Creators | 80% | Per-second streaming payment while segment is active |
-| Filmmaker | 15% | Built the foundation (script + Standard Library) |
-| Curators | 5% | Voted to select best segments |
+Your 30-second segment in a 90-minute film earning $10k/month:
 
-**Example:** 30-second segment in a film earning $10k/month → **$44/month** passive income (until someone beats you).
+**You earn:** $44/month (as long as your segment stays in the film)
+
+Someone submits a better version and gets voted in? They start earning, you stop. Keep competing to stay in the cut.
 
 ---
 
-## Why This Works
+## Learn More
 
-**Standard Library** = first platform solving AI consistency  
-**Streaming revenue** = earn continuously, not one-time payment  
-**Version control** = films improve forever as tech advances  
-**On-chain** = transparent ownership and payments
-
-Read the details:
-- [Product Mechanism](doc/product-mechanism.md) — how the system works
-- [Tokenomics](doc/tokenomics.md) — economics and incentives  
-- [Whitepaper](doc/whitepaper.md) — technical architecture
+- **[Product Mechanism](doc/product-mechanism.md)** — How the system works (workflows, version control)
+- **[Tokenomics](doc/tokenomics.md)** — NFT ownership and revenue distribution
+- **[Whitepaper](doc/whitepaper.md)** — Full technical architecture
 
 ---
 
-## Use Cases
+## Get Involved
 
-- Indie films crowdsourced globally
-- Fan projects (Shakespeare, public domain adaptations)
-- Music videos with consistent art style
-- Educational content built segment-by-segment
-- Corporate videos at scale
-
----
-
-## Contributing
-
-We need:
-- Video creators (claim shots, generate segments)
-- Asset builders (train LoRAs, make ControlNets)
-- Developers (platform, smart contracts, tooling)
-- Writers (docs, translations)
+**Create:** Submit video segments for existing films  
+**Vote:** Help pick the best versions  
+**Build:** Contribute to the platform itself
 
 ---
 
 ## License
 
 Apache 2.0
-
----
-
-**This is Airbnb for film production. Contribute talent, earn revenue, own your work.**
-
-Links coming soon: Website • Discord • Twitter

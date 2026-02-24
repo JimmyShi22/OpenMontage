@@ -41,11 +41,9 @@ Films evolve over time — better segments can replace old ones, shifting revenu
 
 ---
 
-## Get Involved
+## Contributing
 
-**Create:** Submit video segments for existing films  
-**Vote:** Help pick the best versions  
-**Build:** Contribute to the platform itself
+We welcome contributions of all kinds — video segments, scripts, tooling, and ideas. See our documentation for more details.
 
 ---
 

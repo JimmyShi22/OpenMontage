@@ -8,7 +8,7 @@
 
 ![Status](https://img.shields.io/badge/Status-Pre--Alpha-orange)
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue)
-[![Discord](https://img.shields.io/badge/Discord-Join%20Us-7289DA?logo=discord&logoColor=white)](https://discord.gg/openmontage)
+[![Discord](https://img.shields.io/badge/Discord-Join%20Us-7289DA?logo=discord&logoColor=white)](https://discord.gg/SS8BdjYH6W)
 [![Twitter](https://img.shields.io/badge/Twitter-@OpenMontage-1DA1F2?logo=twitter&logoColor=white)](https://twitter.com/openmontage)
 
 > Anyone can contribute a scene to a film. The best version wins. Everyone earns.
@@ -34,7 +34,7 @@ AI video tools have made it possible for anyone to generate cinematic footage �
 4. **Platform** assembles the winning segments into a seamless film
 5. **Revenue** splits automatically: 80% creators, 15% director & Standard Library, 5% voters
 
-Platform lives on Discord — [join to start contributing](https://discord.gg/openmontage).
+Platform lives on Discord — [join to start contributing](https://discord.gg/SS8BdjYH6W).
 
 ## Current Status
 
@@ -71,7 +71,7 @@ Start with the Whitepaper for the full vision, then Product Mechanism for workfl
 
 ## Community
 
-- **Discord**: [discord.gg/openmontage](https://discord.gg/openmontage)
+- **Discord**: [discord.gg/SS8BdjYH6W](https://discord.gg/SS8BdjYH6W)
 - **Twitter**: [@OpenMontage](https://twitter.com/openmontage)
 - **GitHub**: [github.com/digimads-lab/OpenMontage](https://github.com/digimads-lab/OpenMontage)
 

@@ -1,6 +1,6 @@
 # OpenMontage Discord-First Platform Design
 
-**Version 1.0 — Building on Discord Before Building from Scratch**
+**Version 1.1 — Building on Discord Before Building from Scratch**
 
 ---
 
@@ -17,7 +17,7 @@ Building a standalone web app from day one means competing for attention against
 - **No new account**: Creators authenticate with their existing Discord identity
 - **Familiar interface**: Channels, threads, embeds, and slash commands are second nature to this audience
 - **Built-in community features**: Voice channels for director-creator calls, threaded discussions per shot, role-based permissions, notification controls
-- **Mobile-ready**: Discord's mobile app gives creators on-the-go access to claim shots, check earnings, and vote — without building native apps
+- **Mobile-ready**: Discord's mobile app gives creators on-the-go access to claim shots, check earnings, and back clips — without building native apps
 
 ### Faster Iteration
 
@@ -63,7 +63,8 @@ When a director creates a film via `/create-film`, the bot auto-generates a dedi
 |---------|---------|-------------|
 | `#film-overview` | Pinned: script link, Standard Library download, technical specs, treasury parameters | Read-only (@Director pins) |
 | `#shots-available` | Bot-maintained list of unclaimed shots with descriptions and durations | Read-only (Bot-managed) |
-| `#submissions` | All submitted segments posted as embeds with voting buttons | @Creator can submit; all can vote |
+| `#submissions` | All submitted segments posted as embeds with clip details | @Creator can submit; all can view |
+| `#shot-markets` | Active Shot Market competitions — commit/reveal backing for clips | @Backer can back; all can view |
 | `#main-branch` | Current merged film — progress tracker showing completion %, timeline of merges | Read-only (Bot-managed) |
 | `#director-chat` | Q&A between director and contributors — threaded per topic | @Director + @Creator |
 
@@ -82,8 +83,8 @@ When a director creates a film via `/create-film`, the bot auto-generates a dedi
 |---------|--------|
 | `#earnings-dashboard` | Bot responds to `/my-earnings` — personal revenue tracking |
 | `#nft-marketplace` | Clip NFT listings, secondary sales, trading discussion |
-| `#governance-voting` | Active $MONTAGE governance votes with reaction-based polling |
-| `#faucet` | Request testnet $MONTAGE tokens during Phase 1 |
+| `#governance-voting` | Active $MONTAGE platform governance votes with reaction-based polling |
+| `#faucet` | Request testnet $MONTAGE tokens and testnet USDC during Phase 1 |
 
 ### Category: COMMUNITY
 
@@ -93,7 +94,7 @@ When a director creates a film via `/create-film`, the bot auto-generates a dedi
 | `#general` | Off-topic and general discussion |
 | `#feedback` | Platform feedback and feature requests |
 | `#verify-wallet` | Connect wallet via Collab.Land for on-chain identity verification |
-| `#role-select` | Self-assign Creator, Curator, Director, Developer roles via bot reactions |
+| `#role-select` | Self-assign Creator, Backer, Director, Developer roles via bot reactions |
 | `#bot-support` | Report MontageBot issues and command errors |
 
 ---
@@ -110,7 +111,7 @@ The OpenMontage bot (named **MontageBot**) handles all platform operations throu
 /create-film title:[name] script:[url]
 ```
 
-Starts the film setup wizard. The bot DMs the director a step-by-step flow: upload script, upload Standard Library assets, set treasury parameters, configure shot durations. On completion, the bot creates the film's channel category and posts to `#film-listings`.
+Starts the film setup wizard. The bot DMs the director a step-by-step flow: upload script, upload Standard Library assets, deposit Film Creation Bond (minimum 500 USDC) to mint the Film NFT, set treasury parameters, configure shot durations. On completion, the bot creates the film's channel category and posts to `#film-listings`.
 
 **Example embed posted to `#film-listings`:**
 
@@ -124,8 +125,11 @@ Starts the film setup wizard. The bot DMs the director a step-by-step flow: uplo
 │  Avg Shot Duration: 6-12 seconds            │
 │  Standard Library: v1.0.0 (5 characters,    │
 │    cyberpunk style, 3 voice models)         │
-│  Revenue Split: 80% creators / 15%          │
-│    director / 5% curators                   │
+│  Film NFT: 0x7b2...a41 (minted)             │
+│  Film Creation Bond: 5,000 USDC             │
+│  Revenue Split: 75% creators / 10%          │
+│    Film NFT holder / 5% Standard Library    │
+│    / 10% backers                            │
 │                                             │
 │  📜 Script: [View Script]                   │
 │  📦 Standard Library: [Download]            │
@@ -181,7 +185,7 @@ Locks the shot for 72 hours. The bot DMs the creator with Standard Library downl
 /submit film:[film-id] shot:[shot-id] url:[video-url] notes:[description]
 ```
 
-The bot downloads and validates the video (see Section 6: Quality Validation Pipeline). If validation passes, the submission is minted as a Clip NFT and posted to the film's `#submissions` channel as a voting embed. If validation fails, the bot DMs the creator with specific errors.
+The bot downloads and validates the video (see Section 6: Quality Validation Pipeline). If validation passes, the submission is minted as a Clip NFT and posted to the film's `#submissions` channel as a submission embed. If validation fails, the bot DMs the creator with specific errors.
 
 **Example embed posted to `#submissions`:**
 
@@ -200,21 +204,97 @@ The bot downloads and validates the video (see Section 6: Quality Validation Pip
 │                                             │
 │  ▶️ [Watch Video]                            │
 │                                             │
-│  ⏳ Voting open for 72 hours                │
-│  Current votes: 0                           │
-│                                             │
-│  Rate this submission:                      │
-│  [⭐1] [⭐2] [⭐3] [⭐4] [⭐5]               │
+│  ⏳ Shot Market opens when all clips are in  │
+│  Current clips for this shot: 1             │
 └─────────────────────────────────────────────┘
 ```
 
-#### `/vote`
+#### `/back-clip`
 
 ```
-/vote submission:[submission-id] score:[1-5]
+/back-clip film:[film-id] shot:[shot-id] clip:[clip-id] amount:[USDC] salt:[your-secret]
 ```
 
-Casts a vote weighted by the voter's $MONTAGE stake. Votes are anonymous until the 72-hour voting period closes. Alternatively, voters can use the reaction buttons on submission embeds. The bot DMs a confirmation and current vote count (without revealing scores).
+Commit backing to a clip during the 5-day commit phase. The amount is hidden until the reveal phase — only a commitment hash is stored on-chain. The bot DMs a confirmation with the commitment hash and deadline.
+
+**Example response embed (DM):**
+
+```
+┌─────────────────────────────────────────────┐
+│  🔒  Backing Committed                      │
+│─────────────────────────────────────────────│
+│  Film: Space Odyssey 2077                   │
+│  Shot: #042 — Chase Scene                   │
+│  Clip: 0xa3f...8c2 by @NeonArtist          │
+│  Commitment Hash: 0x9f2...b71               │
+│                                             │
+│  Commit Phase Deadline: 2026-03-09 14:00 UTC│
+│  Reveal Phase: 2026-03-09 – 2026-03-11     │
+│                                             │
+│  Current commitments on this shot:          │
+│  • Clip 0xa3f...8c2: 5 commitments          │
+│  • Clip 0xb7e...d43: 3 commitments          │
+│  • Clip 0xc1a...f92: 2 commitments          │
+│  (Amounts hidden until reveal phase)        │
+└─────────────────────────────────────────────┘
+```
+
+#### `/reveal-backing`
+
+```
+/reveal-backing film:[film-id] shot:[shot-id] clip:[clip-id] salt:[your-secret]
+```
+
+Reveal your backing during the 2-day reveal phase. Must match your earlier commitment. The bot verifies the hash and reveals your amount on-chain.
+
+**Example response embed (DM):**
+
+```
+┌─────────────────────────────────────────────┐
+│  ✅  Backing Revealed                        │
+│─────────────────────────────────────────────│
+│  Film: Space Odyssey 2077                   │
+│  Shot: #042 — Chase Scene                   │
+│  Clip: 0xa3f...8c2 by @NeonArtist          │
+│  Your Backing: 100 USDC                     │
+│                                             │
+│  Current Leaderboard (by quadratic weight): │
+│  1. Clip 0xa3f...8c2 — √weight: 22.4       │
+│  2. Clip 0xb7e...d43 — √weight: 18.1       │
+│  3. Clip 0xc1a...f92 — √weight: 12.7       │
+│                                             │
+│  Reveal Phase Deadline: 2026-03-11 14:00 UTC│
+└─────────────────────────────────────────────┘
+```
+
+#### `/claim-market`
+
+```
+/claim-market film:[film-id] shot:[shot-id]
+```
+
+After Shot Market resolution, claim your winner reward or loser refund. The bot checks whether your backed clip won and calculates your payout.
+
+**Example response embed (DM — winner):**
+
+```
+┌─────────────────────────────────────────────┐
+│  🏆  Shot Market Resolved — You Won!        │
+│─────────────────────────────────────────────│
+│  Film: Space Odyssey 2077                   │
+│  Shot: #042 — Chase Scene                   │
+│  Winning Clip: 0xa3f...8c2 by @NeonArtist  │
+│                                             │
+│  Your backing: 100 USDC                     │
+│  Competition payout: +18.50 USDC            │
+│  Total claimable: 118.50 USDC              │
+│                                             │
+│  + You earn ongoing 10% backer share from   │
+│    streaming revenue for this shot.         │
+│                                             │
+│  [Claim Now]                                │
+└─────────────────────────────────────────────┘
+```
 
 #### `/film-status`
 
@@ -231,7 +311,7 @@ Casts a vote weighted by the voter's $MONTAGE stake. Votes are anonymous until t
 │  Progress: ████████░░ 78% (187/240 shots)   │
 │  Active claims: 23 shots                    │
 │  Open shots: 30 shots                       │
-│  Submissions awaiting vote: 12              │
+│  Clips in active markets: 12                │
 │  Total contributors: 94                     │
 │  Estimated runtime: 38m 22s                 │
 │                                             │
@@ -306,7 +386,7 @@ The director uploads LoRA models, style guides, prompt templates, ControlNets, a
 
 **Step 4 — Configure treasury**
 
-The bot walks the director through revenue split confirmation (default: 80/15/5), platform fee acknowledgment, and wallet address verification. On confirmation, the bot deploys the Treasury smart contract.
+The bot walks the director through Film Creation Bond deposit (minimum 500 USDC), revenue split confirmation (default: 75/10/5/10), platform fee acknowledgment, and wallet address verification. On confirmation, the bot mints the Film NFT and deploys the Treasury smart contract.
 
 **Step 5 — Announce**
 
@@ -328,37 +408,41 @@ The creator loads the protagonist LoRA into their pipeline (Runway, ComfyUI, etc
 
 **Step 4 — Submit**
 
-They run `/submit film:space-odyssey shot:042 url:https://... notes:"Blade Runner-inspired lighting, heavy fog"`. MontageBot validates the submission (format, resolution, duration, Standard Library version). On pass, it mints a Clip NFT and posts the voting embed to `#submissions`.
+They run `/submit film:space-odyssey shot:042 url:https://... notes:"Blade Runner-inspired lighting, heavy fog"`. MontageBot validates the submission (format, resolution, duration, Standard Library version). On pass, it mints a Clip NFT and posts the submission embed to `#submissions`.
 
-**Step 5 — Voting**
+**Step 5 — Shot Market**
 
-Community members with $MONTAGE stake vote over 72 hours using `/vote` or the reaction buttons on the embed. Votes are anonymous until the period closes. Voting requires a minimum of 3 submissions per shot; if a shot doesn't reach this threshold within 30 days, the director may trigger an early vote or auto-merge a single submission (see governance framework for details).
+Once multiple clips are submitted for the same shot, the Shot Market opens. Backers commit hidden USDC backing during the 5-day commit phase, then reveal during the 2-day reveal phase. The clip with the highest quadratic-weighted backing wins. A minimum of 2 clips per shot is required; if a shot doesn't reach this threshold within 30 days, the director may trigger an auto-merge of a single submission (see governance framework for details).
 
 **Step 6 — Merge or archive**
 
-If the submission wins the vote, MontageBot updates the film's `#main-branch` channel, changes the Clip NFT status to `"merged"`, and announces the merge. If a different submission wins, the creator's NFT is archived — they can iterate and resubmit.
+If the submission wins the Shot Market, MontageBot updates the film's `#main-branch` channel, changes the Clip NFT status to `"merged"`, and announces the merge. Winning backers receive their competition payout. If a different clip wins, the creator's NFT is archived — they can iterate and resubmit. Losing backers receive a 75% refund.
 
 **Step 7 — Earn**
 
 The creator runs `/my-earnings` anytime to see their active Clip NFTs and estimated monthly revenue from streaming.
 
-### Curator/Voter Flow
+### Backer Workflow
 
-**Step 1 — Get notified**
+**Step 1 — Browse Shot Markets**
 
-MontageBot pings the `@Curator` role in the film's `#submissions` channel whenever a new submission is posted and needs votes.
+MontageBot pings the `@Backer` role in the film's `#shot-markets` channel whenever a new Shot Market opens (i.e., multiple clips are available for a shot). Backers run `/shot-market film:[id] shot:[id]` to view available clips and current commitment counts.
 
-**Step 2 — Review**
+**Step 2 — Review clips**
 
-Curators watch the submitted video via the embed's "Watch Video" link and compare against the Standard Library style guide and shot requirements.
+Backers watch the submitted clips via the embed's "Watch Video" link and compare against the Standard Library style guide and shot requirements.
 
-**Step 3 — Vote**
+**Step 3 — Commit backing**
 
-They use `/vote submission:0xa3f8c2 score:4` or click the star reaction buttons on the embed. Their vote is weighted by $MONTAGE stake.
+They use `/back-clip film:space-odyssey shot:042 clip:0xa3f8c2 amount:100 salt:mysecret` during the 5-day commit phase. Their backing amount is hidden until the reveal phase.
 
-**Step 4 — Earn**
+**Step 4 — Reveal backing**
 
-After the voting period closes, curators who participated receive their share of the 5% curation pool, distributed proportionally to voting activity.
+During the 2-day reveal phase, backers return and run `/reveal-backing film:space-odyssey shot:042 clip:0xa3f8c2 salt:mysecret` to reveal their commitment.
+
+**Step 5 — Claim rewards**
+
+After the Shot Market resolves, backers run `/claim-market film:space-odyssey shot:042` to claim their payout. Winners receive their original stake plus a share of 20% of losers' stakes (the Reward Pool). Losers receive a 75% refund. Winners also earn ongoing streaming revenue from the 10% backer pool for that shot.
 
 ---
 
@@ -378,10 +462,10 @@ OpenMontage uses [Collab.Land](https://collab.land), the industry-standard Disco
 
 | Discord Role | Requirement | Capabilities |
 |-------------|-------------|______________|
-| `@Verified-Voter` | Wallet connected via Collab.Land | Vote on submissions, view earnings |
+| `@Verified-Voter` | Wallet connected via Collab.Land | View earnings, participate in platform governance |
 | `@Creator` | Wallet verified + first `/claim-shot` | Submit segments, claim shots |
-| `@Curator` | Wallet verified + minimum $MONTAGE stake | Weighted voting, curation rewards |
-| `@Director` | Wallet verified + created a film | Manage film channels, pin notes |
+| `@Backer` | Wallet verified + USDC balance | Back clips in Shot Markets, earn backer rewards |
+| `@Director` | Wallet verified + created a film (Film Creation Bond deposited) | Manage film channels, pin notes, Film NFT holder |
 
 ### On-Chain Mapping
 
@@ -391,7 +475,7 @@ The bot maintains a mapping table (stored in the application database, not on-ch
 Discord User ID  <->  Wallet Address  <->  On-Chain Identity
 ```
 
-All on-chain transactions (NFT minting, revenue distribution, voting) use the wallet address. Discord is the interface layer — the blockchain is the source of truth.
+All on-chain transactions (NFT minting, revenue distribution, Shot Market backing) use the wallet address. Discord is the interface layer — the blockchain is the source of truth.
 
 ### Security Considerations
 
@@ -404,7 +488,7 @@ All on-chain transactions (NFT minting, revenue distribution, voting) use the wa
 
 ## 6. Quality Validation Pipeline
 
-When a creator runs `/submit`, MontageBot performs a series of automated checks before accepting the submission. This prevents low-quality or non-compliant content from reaching the voting stage.
+When a creator runs `/submit`, MontageBot performs a series of automated checks before accepting the submission. This prevents low-quality or non-compliant content from reaching the Shot Market stage.
 
 ### Automated Checks
 
@@ -434,7 +518,7 @@ When a creator runs `/submit`, MontageBot performs a series of automated checks 
 
 ### Validation Results
 
-**Pass**: The bot mints a Clip NFT, posts the voting embed to `#submissions`, and DMs the creator a confirmation with their NFT ID.
+**Pass**: The bot mints a Clip NFT, posts the submission embed to `#submissions`, and DMs the creator a confirmation with their NFT ID.
 
 **Fail**: The bot DMs the creator with specific error details and remediation steps:
 
@@ -471,9 +555,9 @@ Failed validations do not consume the creator's shot lock — they can fix and r
 |------|-------|-------------|
 | `@Admin` | Server-wide | Full server management, bot configuration, ban/kick |
 | `@Director` | Per-film channels | Pin notes in film channels, flag submissions, manage Standard Library updates |
-| `@Curator` | Per-film submissions | Weighted voting, flag inappropriate content |
+| `@Backer` | Per-film Shot Markets | Back clips with USDC, flag inappropriate content |
 | `@Creator` | Per-film submissions | Claim shots, submit segments |
-| `@Verified-Voter` | Per-film submissions | Basic voting rights |
+| `@Verified-Voter` | Platform-wide | Platform governance voting |
 
 ### Spam Prevention
 
@@ -492,7 +576,7 @@ Failed validations do not consume the creator's shot lock — they can fix and r
 ### Rights Violations
 
 - Directors can flag submissions that violate Standard Library terms or use unauthorized assets
-- Flagged submissions are temporarily hidden from voting and sent to `#mod-queue`
+- Flagged submissions are temporarily hidden from Shot Markets and sent to `#mod-queue`
 - Confirmed violations result in Clip NFT burn and temporary creator suspension
 - Repeat offenders lose `@Creator` role
 
@@ -521,7 +605,7 @@ The Discord-first approach is designed for Phase 1 (Q2-Q3 2026). The transition 
 | Film browsing & discovery | `#film-listings` channel | Rich catalog with filters, search, thumbnails |
 | Shot claiming | `/claim-shot` command | Visual shot board (kanban-style) |
 | Video submission | `/submit` + URL | Drag-and-drop upload with inline preview |
-| Voting | Embed reactions / `/vote` | Side-by-side comparison viewer |
+| Shot Market backing | `/back-clip`, `/reveal-backing`, `/claim-market` | Side-by-side comparison viewer with integrated backing UI |
 | Earnings tracking | `/my-earnings` DM | Real-time dashboard with charts, payout history |
 | Film playback | External links | Integrated video player with segment-by-segment navigation |
 | Standard Library | File download links | Visual asset browser with version diffing |
@@ -532,7 +616,7 @@ The Discord-first approach is designed for Phase 1 (Q2-Q3 2026). The transition 
 Discord remains the **community and notification layer** even after the web dashboard launches:
 
 - **Notifications**: Bot pings for new films, vote results, earnings milestones, shot replacements
-- **Quick actions**: `/claim-shot`, `/vote`, `/my-earnings` continue to work for convenience
+- **Quick actions**: `/claim-shot`, `/back-clip`, `/my-earnings` continue to work for convenience
 - **Community discussion**: `#general`, `#tools-help`, `#ai-tools-discussion`, director Q&A channels
 - **Voice channels**: Creator calls, director AMAs, community events
 - **Governance discussion**: Proposal debates before formal on-chain votes
@@ -543,11 +627,11 @@ The web dashboard and Discord bot share the same backend API and database. Actio
 
 - Claim a shot on web → `#shots-available` updates on Discord
 - Submit via Discord → appears in web dashboard immediately
-- Vote on web → vote count updates on Discord embed
+- Back a clip on web → commitment count updates on Discord embed
 
 This dual-interface approach ensures no user is forced to migrate — power users can use the web dashboard for complex tasks while continuing to get notified and take quick actions through Discord.
 
 ---
 
-**Version**: 1.0
-**Last Updated**: 2026-03-03
+**Version**: 1.1
+**Last Updated**: 2026-03-04

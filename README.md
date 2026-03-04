@@ -23,16 +23,16 @@ AI video tools have made it possible for anyone to generate cinematic footage �
 
 - **Standard Library** — Every film ships a dependency package (character LoRAs, style guides, voice models) so all contributors produce visually consistent output
 - **Pull Request workflow** — Creators claim shots, generate segments with AI tools, and submit for community review
-- **Merit-based earnings** — 80% of revenue goes to creators, split by screen time. Your clip earns as long as it's in the final cut
+- **Merit-based earnings** — 75% of revenue goes to creators, split by screen time. Your clip earns as long as it's in the final cut
 - **Living films** — Better segments can replace older ones. Films improve as AI technology advances
 
 ## How It Works
 
 1. **Director** uploads a script and decomposes it into individual shots
 2. **Creators** generate video segments using AI tools (Sora, Runway, Kling, ComfyUI) with the film's Standard Library
-3. **Community** votes to select the best version of each shot
+3. **Community** backs clips in Shot Markets to select the best version of each shot
 4. **Platform** assembles the winning segments into a seamless film
-5. **Revenue** splits automatically: 80% creators, 15% director & Standard Library, 5% voters
+5. **Revenue** splits automatically: 75% creators, 10% Film NFT holder, 5% Standard Library contributors, 10% backers
 
 Platform lives on Discord — [join to start contributing](https://discord.gg/SS8BdjYH6W).
 
@@ -52,8 +52,8 @@ Join Discord → `/create-film` → upload your script → build your Standard L
 ### As a Creator (AI Video Artist)
 Join Discord → browse `#film-listings` → claim a shot → submit your work → earn revenue
 
-### As a Curator / Voter
-Join Discord → vote on submissions → earn 5% of film revenue
+### As a Backer
+Join Discord → back winning clips → earn from competition rewards and 10% of film streaming revenue
 
 ---
 

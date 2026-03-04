@@ -22,25 +22,25 @@ Phase 1 is about validating the core thesis — that crowdsourced AI filmmaking 
 
 **Community Infrastructure**
 - Launch the OpenMontage Discord server (target: 1,000 members by end of Q2)
-  - Set up server architecture: #announcements, #film-listings, #general, #creator-showcase, #voting, #support, per-film channels
-  - Deploy welcome flow with role selection (Creator, Curator, Viewer)
+  - Set up server architecture: #announcements, #film-listings, #general, #creator-showcase, #governance-voting, #support, per-film channels
+  - Deploy welcome flow with role selection (Creator, Backer, Viewer)
   - Begin community building via AI filmmaking Twitter/X spaces, Reddit posts, and partnerships with AI art communities
   - Recruit 10–15 community moderators
 
 **Smart Contract Development**
 - Deploy core smart contracts on Base testnet:
   - `ClipNFT.sol` — ERC-721 for segment ownership with metadata storage
-  - `MovieNFT.sol` — Composite NFT with dynamic pointer array
-  - `Treasury.sol` — Automated revenue distribution (80/15/5 split)
-  - `Voting.sol` — Weighted voting with blind voting periods
+  - `FilmNFT.sol` — Composite NFT with dynamic pointer array + Film Creation Bond management
+  - `Treasury.sol` — Automated revenue distribution (75/10/5/10 split)
+  - `ShotMarket.sol` — Shot Market: submission, backing, commit-reveal, resolution, payouts
 - Internal testing and iteration on testnet
 - Publish contract ABIs and developer documentation
 
 **Discord Bot v0.1**
-- Core commands: `/claim-shot`, `/submit`, `/vote`, `/my-clips`, `/film-status`
+- Core commands: `/claim-shot`, `/submit`, `/back-clip`, `/reveal-backing`, `/claim-market`, `/my-clips`, `/film-status`
 - Basic wallet connection via Discord OAuth
 - Submission upload flow (video file + metadata)
-- Voting interface with emoji reactions or slash command ratings
+- Shot Market backing interface with commit-reveal workflow
 
 **Standard Library Specification**
 - Publish Standard Library Specification v1.0
@@ -66,21 +66,21 @@ Phase 1 is about validating the core thesis — that crowdsourced AI filmmaking 
 
 **Discord Bot v0.5**
 - Wallet integration (connect MetaMask/Coinbase Wallet via Discord)
-- Automated voting tallies with transparent result posting
-- Leaderboard: top creators by merged clips, top curators by accuracy
-- Notification system for new submissions, voting periods, and merge events
+- Automated Shot Market resolution with transparent result posting
+- Leaderboard: top creators by merged clips, top backers by accuracy
+- Notification system for new submissions, backing periods, and merge events
 - `/compare` command to view side-by-side submissions for a shot
 
 **Pilot Film Completion**
-- Complete "Genesis" — first end-to-end test of the full workflow
+- Complete “Genesis” — first end-to-end test of the full workflow
   - All 100 shots receive at least one submission
-  - Community voting selects the best version for each shot
+  - Shot Market backing selects the best version for each shot
   - Final assembly into a watchable 20-minute film
   - Public premiere on Discord with live watch party
 - Publish detailed learnings documentation:
   - What worked and what didn't in the Standard Library approach
   - Creator feedback survey results
-  - Voting dynamics analysis (participation rates, consensus patterns)
+  - Backing dynamics analysis (participation rates, consensus patterns)
   - Technical post-mortem (latency, storage costs, bot reliability)
 
 **Security & Partnerships**
@@ -97,12 +97,12 @@ Phase 1 is about validating the core thesis — that crowdsourced AI filmmaking 
 
 | Criteria | Target |
 |----------|--------|
-| Creators who submitted ≥ 1 clip | ≥ 50 |
-| Pilot film shots filled | ≥ 80% (80 of 100) |
+| Creators who submitted ≥1 clip | ≥50 |
+| Pilot film shots filled | ≥80% (80 of 100) |
 | Smart contract security audit | Pass with no unresolved critical issues |
 | Community sentiment | Net positive (measured via survey) |
-| Discord members | ≥ 5,000 |
-| Standard Library compliance rate | ≥ 90% of submissions pass validation |
+| Discord members | ≥5,000 |
+| Standard Library compliance rate | ≥90% of submissions pass validation |
 
 ---
 
@@ -122,25 +122,25 @@ A companion web interface to Discord (not a replacement — Discord remains the 
 - **Film browsing**: Discover active projects, browse shots, watch current cuts
 - **Submission management**: Upload clips, track submission status, view voting results
 - **Revenue tracking**: Real-time earnings dashboard, claim revenue, transaction history
-- **Profile pages**: Creator portfolio, curation stats, reputation score
+- **Profile pages**: Creator portfolio, backing stats, reputation score
 - **Wallet connection**: MetaMask, Coinbase Wallet, WalletConnect
 
 ### Discord Bot v1.0 (Full Feature Set)
 - All v0.5 features plus:
   - Revenue claiming directly from Discord
   - Film creation workflow for directors (guided setup)
-  - Advanced voting: quadratic voting option, delegation
+  - Shot Market backing tools with commit-reveal interface
   - Automated Standard Library compliance checking on submission
   - Per-film private channels with role-gated access
 
 ### Film Ticket NFT Crowdfunding
 - Launch Film Ticket NFT system for 3 inaugural public films
-- Ticket holders receive: lifetime streaming access, voting rights, revenue share (10% of pool)
+- Ticket holders receive: lifetime streaming access, revenue share (10% from creator pool)
 - Smart contract escrow with milestone-based release
 
 ### Platform Opens Publicly
 - No invite required — any creator can browse films, claim shots, and submit clips
-- Any director can create a new film repository (with minimum Standard Library requirements)
+- Any director can create a new film repository (with minimum Standard Library requirements and Film Creation Bond of min 500 USDC)
 - $MONTAGE test token distribution to Phase 1 contributors as a reward for early participation
 
 ### Phase 2 KPIs
@@ -151,7 +151,7 @@ A companion web interface to Discord (not a replacement — Discord remains the 
 | Active film projects | 10 |
 | Registered creators | 500+ |
 | Film Ticket NFT crowdfunding raised | $50,000+ |
-| Films with complete first cuts | ≥ 3 |
+| Films with complete first cuts | ≥3 |
 | Average time to first submission per shot | < 7 days |
 
 ---
@@ -171,8 +171,8 @@ Phase 3 launches the $MONTAGE token, activates full governance, and builds the t
 - CEX listing strategy (target 2–3 mid-tier exchanges within 3 months of TGE)
 
 **Full Governance Activation**
-- Token-weighted voting replaces testnet governance
-- DAO proposal system: any holder with ≥ 10,000 $MONTAGE can submit proposals
+- Token-weighted voting replaces testnet governance for platform-level decisions
+- DAO proposal system: any holder with ≥10,000 $MONTAGE can submit proposals
 - First governance votes: platform fee adjustment, grant allocations, feature priorities
 - Delegate voting for passive holders
 
@@ -192,7 +192,7 @@ Phase 3 launches the $MONTAGE token, activates full governance, and builds the t
 **Cross-Film Standard Library Marketplace**
 - Directors can license Standard Library assets from other films
 - Revenue sharing for Standard Library creators across films
-- "Remix" capability: adapt characters/styles from one film to another with permission
+- “Remix” capability: adapt characters/styles from one film to another with permission
 - Trending Standard Libraries and featured collections
 
 **DeFi Integration**
@@ -207,7 +207,7 @@ Phase 3 launches the $MONTAGE token, activates full governance, and builds the t
 
 **Festival Strategy**
 - Submit top OpenMontage films to indie film festivals (Sundance Shorts, SXSW, Tribeca)
-- Establish "Made with OpenMontage" branding for festival entries
+- Establish “Made with OpenMontage” branding for festival entries
 - Document the collaborative creation process as part of festival submissions
 
 **AI Tool Provider Integrations**
@@ -224,7 +224,7 @@ Phase 3 launches the $MONTAGE token, activates full governance, and builds the t
 | Total creator earnings distributed | $1,000,000+ |
 | $MONTAGE token holders | 10,000+ |
 | Standard Library marketplace listings | 50+ |
-| Films accepted to festivals | ≥ 1 |
+| Films accepted to festivals | ≥1 |
 
 ---
 
@@ -236,12 +236,12 @@ Phase 4 moves OpenMontage from a crypto-native community into broader recognitio
 
 ### Film Festival Partnerships
 - Establish dedicated OpenMontage award category at partner festivals
-- Annual "OpenMontage Film Awards" — community-voted, on-chain, with $MONTAGE prize pool
+- Annual “OpenMontage Film Awards” — community-voted, on-chain, with $MONTAGE prize pool
 - Red carpet premiere events for top community films
 
 ### Studio Licensing Exploration
 - Licensing framework for studios to acquire distribution rights to OpenMontage films
-- "Studio Edition" workflow: professional post-production pipeline (color grading, sound mixing) applied to community-created films
+- “Studio Edition” workflow: professional post-production pipeline (color grading, sound mixing) applied to community-created films
 - Revenue sharing between community creators and studio distribution
 
 ### VR/AR Viewing Experiences
@@ -313,7 +313,7 @@ Phase 4 moves OpenMontage from a crypto-native community into broader recognitio
 
 ### Chicken-and-Egg Problem
 **Risk**: No films without creators, no creators without films.
-**Mitigation**: Produce the Pilot Film "Genesis" with a hand-selected group of 50 invite-only creators before opening publicly. This proves the concept, generates showcase content, and creates a community nucleus. Phase 1 contributors receive $MONTAGE test token airdrops, creating early loyalty.
+**Mitigation**: Produce the Pilot Film “Genesis” with a hand-selected group of 50 invite-only creators before opening publicly. This proves the concept, generates showcase content, and creates a community nucleus. Phase 1 contributors receive $MONTAGE test token airdrops, creating early loyalty.
 
 ### AI Tool API Costs
 **Risk**: Video generation is expensive ($5–$20 per shot in API fees). Creators may not invest if returns are uncertain.
@@ -328,12 +328,12 @@ Phase 4 moves OpenMontage from a crypto-native community into broader recognitio
 **Mitigation**: Architecture designed for L2 portability — all smart contracts are standard Solidity on EVM. Arbitrum One serves as the designated fallback chain (Base uses OP Stack and Arbitrum uses Nitro, but both are EVM-compatible). Migration requires minimal contract changes. Multi-chain deployment is a Phase 3+ consideration if demand warrants it.
 
 ### Quality Control at Scale
-**Risk**: As the platform opens publicly, submission quality may drop, overwhelming curators.
-**Mitigation**: Automated quality floors (resolution, format, Standard Library compliance) filter out clearly non-compliant submissions before they reach human voters. AI consistency scoring provides a pre-screen layer. Reputation-weighted voting ensures experienced curators have more influence. Directors retain the ability to set minimum quality thresholds per film.
+**Risk**: As the platform opens publicly, submission quality may drop, overwhelming backers.
+**Mitigation**: Automated quality floors (resolution, format, Standard Library compliance) filter out clearly non-compliant submissions before they reach the Shot Market. AI consistency scoring provides a pre-screen layer. Quadratic backing ensures broad community consensus outweighs concentrated capital. Directors retain the ability to set minimum quality thresholds per film.
 
 ### Token Price Volatility
-**Risk**: $MONTAGE price volatility could destabilize voting incentives and creator earnings.
-**Mitigation**: Creator earnings are denominated in stablecoin (USDC) from film revenue — not in $MONTAGE. The token is used for governance and voting weight, not as a payment currency. Buyback & burn creates structural demand. Treasury reserve provides a stability buffer. Vesting schedules prevent early dump pressure (only ~8% circulating at TGE).
+**Risk**: $MONTAGE price volatility could destabilize backing incentives and creator earnings.
+**Mitigation**: Creator earnings are denominated in stablecoin (USDC) from film revenue — not in $MONTAGE. The token is used for platform governance only (not clip selection — that uses USDC-based Shot Markets). Buyback & burn creates structural demand. Treasury reserve provides a stability buffer. Vesting schedules prevent early dump pressure (only ~8% circulating at TGE).
 
 ---
 

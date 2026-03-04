@@ -1,6 +1,6 @@
 # OpenMontage Governance Framework
 
-**Version 1.0 — How Decisions Get Made**
+**Version 1.1 — How Decisions Get Made**
 
 ---
 
@@ -10,7 +10,7 @@ OpenMontage governance is built on four foundational principles:
 
 ### Meritocracy
 
-Influence in the OpenMontage ecosystem is earned through contributions, not purchased through connections. A first-time creator whose segment wins a community vote has the same economic rights as a veteran with dozens of merged clips. Quality is the only currency that matters for film-level decisions. Platform-level governance introduces token-weighted voting, but caps and reputation multipliers ensure that deep engagement always outweighs raw capital.
+Influence in the OpenMontage ecosystem is earned through contributions, not purchased through connections. A first-time creator whose clip wins a Shot Market has the same economic rights as a veteran with dozens of merged clips. Quality is the only currency that matters for film-level decisions. Platform-level governance introduces token-weighted voting, but caps and reputation multipliers ensure that deep engagement always outweighs raw capital.
 
 ### Transparency
 
@@ -57,53 +57,87 @@ Before full DAO governance is active, emergency actions (contract pause, critica
 
 ---
 
-### 2.2 Film-Level Governance
+### 2.2 Film-Level Governance — Shot Competition Markets
 
-Film-level governance determines which segments get merged into a film's Main Branch. This is the creative heart of OpenMontage.
+Film-level governance determines which clips get merged into a film's Main Branch. This is the creative and economic heart of OpenMontage.
 
-#### Shot Voting Mechanics
+The key governance mechanism at the film level is no longer direct token voting — it is the **Shot Competition Market**: an economic mechanism where participants express quality judgments by staking real capital. Economic skin-in-the-game produces more honest quality signals than free token votes.
 
-When contributors submit video segments for a Shot, the community decides which version becomes the canonical one:
+#### Market Lifecycle
 
-- **Voting opens**: Automatically triggered when a Shot reaches a minimum of **3 submissions**
-- **Voting period**: **72 hours** from opening
-- **Minimum votes required**: Configurable by the film's director (default: **10 votes**)
-- **Voting weight**: Combined score of $MONTAGE stake and curator reputation score
-- **Result**: Highest weighted-vote-total submission is merged into Main Branch
+Each Shot's competition follows a structured commit-reveal market:
 
-#### Insufficient Submissions
+1. **Commit Phase (5 days)**: Backers submit hidden commitments — a hash of `(clipId, amount, salt)`. Clip creators also “back” their own clip automatically; their submission stake (Creator Bond) counts as initial backing in the commit phase.
 
-If a Shot does not reach the 3-submission threshold within **30 days** (configurable by the director), the following fallback rules apply:
+2. **Reveal Phase (2 days)**: Backers reveal their actual backing amounts. The `ShotMarket` contract verifies each reveal against stored commitment hashes.
 
-- **2 submissions**: The director may trigger an early vote on the available submissions, using the standard 72-hour voting period
-- **1 submission**: The director may auto-merge the single submission after the timeout period, bypassing the voting process
-- **0 submissions**: The shot remains open; the director may extend the deadline, adjust the shot's requirements, or break it into smaller shots to attract contributors
+3. **Resolution**: The clip with the highest **quadratic-weighted backing** wins. Ties are broken by earliest submission timestamp.
 
-Directors can also extend the submission deadline at any time before the timeout to allow more time for contributors.
+#### Quadratic Backing Weight
 
-Voters evaluate submissions on three criteria:
-1. Standard Library adherence (visual/audio consistency)
-2. Technical quality (lighting, motion, composition, resolution)
-3. Creative interpretation within the film's artistic guidelines
+Winner selection uses quadratic backing weight rather than raw capital totals. This ensures **breadth of support matters more than depth of capital**:
 
-#### Replacement Voting
+**Formula**:
+```
+BackingWeight(clip) = Σ √(deposit_i)    for all backers i of that clip (including creator)
+```
 
-Once a segment is merged, it can still be replaced if the community believes a superior version exists. Replacement voting has a deliberately higher bar to protect existing creators from frivolous challenges:
+The creator's own submission stake (min 50 USDC) is automatically entered as their initial backing commitment. The quadratic formula counts all backers including the creator: `BackingWeight = Σ √(deposit_i)` for all i (creator + external backers).
 
-- **Trigger**: A new submission for an already-merged Shot, plus a **20% improvement signal** (at least 20% of eligible voters must signal they want to re-evaluate)
-- **Approval threshold**: **60% supermajority** (vs. 50%+1 for initial merge)
-- **Challenge window**: The original creator has **7 days** to respond — they may submit an improved version of their own, which is included in the replacement vote
-- **Cooldown**: After a successful replacement, the same Shot cannot be challenged again for 14 days
+**Why quadratic**: 100 backers at $100 each produce a weight of 1,000, while 1 whale at $10,000 produces a weight of only 100. Crowd wisdom beats capital dominance by design.
+
+**Example**: Clip A has 3 backers ($200, $100, $50):
+- Weight = √200 + √100 + √50 = 14.1 + 10.0 + 7.1 = **31.2**
+
+#### Winner Payouts
+
+After resolution, the smart contract distributes funds:
+
+- **Winning clip backers**: Full stake returned + proportional share of the Reward Pool (20% of losing stakes)
+- **Winning clip creator**: Submission stake (Creator Bond) returned in full + 50% of Reward Pool
+- **Competition Tax**: 5% of losing stakes → Film Treasury (funds ongoing operations, streaming infrastructure)
+- **Protocol share**: Included in platform fee structure (see tokenomics)
+
+#### Loser Refunds
+
+- **Losing clip backers**: 75% of backing stake returned. The remaining 25% funds the Reward Pool + Competition Tax.
+- **Losing clip creators**: 75% of submission stake (Creator Bond) returned. Same 25% penalty applies.
+- **All refunds** are claimable immediately after market resolution.
+
+#### Insufficient Submissions Edge Cases
+
+- **1 clip submitted**: Auto-wins with no competition. Creator gets submission stake back in full. No prize pool (no competition occurred).
+- **2 clips**: Market runs normally with full commit-reveal cycle.
+- **0 clips after 30 days**: Shot flagged as “stalled”; director can extend the deadline or re-describe the shot requirements.
+
+#### Replacement Challenge Protocol
+
+Once a clip is merged, it can be replaced if a genuinely superior version appears. The replacement process uses deliberate friction to protect incumbent creators:
+
+1. **Challenge initiation**: Any creator can challenge an existing merged clip by depositing **2× the original Creator Bond** (Challenge Bond)
+2. **Incumbency advantage**: A new mini-market opens where the incumbent clip starts with a **synthetic backing weight** equal to 50% of its original winning weight. The challenger's clip must achieve a quadratic-weighted backing score greater than 1.5× the incumbent's current score (50% incumbency advantage) to trigger a replacement.
+3. **Cooldown**: 21-day cooldown per shot after any market resolution (initial or challenge)
+4. **If challenger wins**: Incumbent clip archived (revenue stops), challenger clip merged (revenue starts). Challenger gets Challenge Bond back + reward pool share. Incumbent creator receives no additional penalty beyond losing their merged status.
+5. **If challenger loses**: 75% of Challenge Bond refunded to challenger; 25% of forfeited amount goes to incumbent creator as a “defense reward”
+6. **Incumbent response window**: The incumbent creator is notified and has 7 days to submit an improved version of their own clip (at no additional bond cost) before the mini-market's backing phase begins
+
+#### Director Restrictions in Shot Markets
+
+Directors **cannot back any clips** in their own film's Shot Markets. This is a hard conflict-of-interest rule enforced at the smart contract level — the `ShotMarket.commitBacking()` function rejects transactions from the Film NFT holder's address.
+
+#### Anti-Whale Mechanism
+
+Quadratic backing weight **is** the anti-whale mechanism. No additional voting power cap is needed for film-level decisions. The math guarantees that broad community consensus always outweighs concentrated capital. Maximum single-address backing is still tracked for transparency reporting.
 
 #### Dispute Resolution
 
-If a participant believes a vote outcome was unfair (due to manipulation, technical glitch, or rule violation):
+If a participant believes a market outcome was unfair (due to manipulation, technical glitch, or rule violation):
 
-1. **Appeal Window**: 48 hours after the vote result is finalized
+1. **Appeal Window**: 48 hours after the market result is finalized
 2. **Appeal Stake**: Appellant must stake **10 $MONTAGE** (slashed if the appeal fails, returned if it succeeds)
-3. **Jury Selection**: 7 jurors randomly selected from a pool of high-reputation curators (reputation score >= 75th percentile, no participation in the original vote)
-4. **Jury Deliberation**: 72 hours to review submissions, vote records, and appellant's argument
-5. **Jury Verdict**: Simple majority (4/7) to overturn; if overturned, the vote is re-run with the disputed submission(s) flagged
+3. **Jury Selection**: 7 jurors randomly selected from a pool of high-reputation backers (reputation score >= 75th percentile, no participation in the original market)
+4. **Jury Deliberation**: 72 hours to review clips, backing records, and appellant's argument
+5. **Jury Verdict**: Simple majority (4/7) to overturn; if overturned, the market is re-run with the disputed clip(s) flagged
 6. **Final Escalation**: If either party contests the jury verdict, the dispute escalates to a platform-level DAO vote (binding, but rare)
 
 ---
@@ -143,56 +177,61 @@ Standard Libraries follow **Semantic Versioning (SemVer)**:
 
 ---
 
-## 3. Roles and Voting Power
+## 3. Roles and Participation Rights
 
-Voting power in OpenMontage is designed to reward active, high-quality participation while preventing plutocratic capture.
+OpenMontage separates film-level participation (Shot Markets, economic staking) from platform-level participation ($MONTAGE governance voting).
 
-| Role | Definition | Base Voting Power | Notes |
-|------|-----------|-------------------|-------|
-| **Creator** | Any wallet that has submitted >=1 clip | 1x | Minimum participation threshold |
-| **Verified Creator** | >=3 merged clips across any films | 1.5x | Proven track record of quality |
-| **Curator** | Staking >=100 $MONTAGE for curation | Stake-weighted | 1 $MONTAGE staked = 1 additional vote unit |
-| **Director** | Film initiator who built the Standard Library | Special role | See restrictions below |
-| **Platform Team** | OpenMontage founding/engineering team | No voting power | Cannot vote on film-level decisions |
+| Role | Definition | Film-Level Rights | Platform-Level Rights |
+|------|-----------|-------------------|----------------------|
+| **Creator** | Any wallet that has submitted >=1 clip | Submit clips + stake Creator Bond; back clips in other shots | None (unless holding $MONTAGE) |
+| **Backer** | Any wallet that has backed >=1 clip | Stake USDC to back clips in Shot Markets | None (unless holding $MONTAGE) |
+| **Director** | Film initiator who holds the Film NFT | Set film parameters; manage Standard Library; **cannot** back clips in own film | $MONTAGE governance (if holding) |
+| **$MONTAGE Holder** | Wallet staking $MONTAGE tokens | Fee discounts on Competition Tax | Platform governance votes |
+| **Platform Team** | OpenMontage founding/engineering team | No participation in Shot Markets | Emergency multi-sig (Phase 1 only) |
 
 ### Director Restrictions
 
 Directors hold a privileged position as film initiators but face governance constraints to prevent conflicts of interest:
-- Directors **cannot vote** on segment selection for their own films
-- Directors **can** set film parameters (minimum votes, voting period length, quality thresholds)
-- Directors **can** veto a single merge decision per month (emergency override) — but the veto is publicly logged and can be overridden by a 75% community supermajority
+- Directors **cannot back any clips** in their own film's Shot Markets (smart contract enforced)
+- Directors **can** set film parameters (submission deadlines, competition timing, quality thresholds, Standard Library versions)
+- Directors **can** extend deadlines and manage stalled shots
+- Directors **cannot** override Shot Market outcomes — the market result is final (subject to dispute resolution)
 
-### Voting Power Caps
+### $MONTAGE Token Role
 
-To prevent whale dominance in any single decision:
-- **Maximum voting power cap**: No single address can control more than **5% of total vote weight** in any individual decision
-- **Quadratic scaling** (optional, per-film setting): Voting cost increases quadratically (`cost = votes^2`), making it progressively more expensive to concentrate influence
+The $MONTAGE token is used for:
+- **Platform governance votes**: Proposal approval, fee changes, treasury allocation, contract upgrades
+- **Fee discount staking**: Staking $MONTAGE reduces the Competition Tax rate from 5% down to a minimum of 2%
+- **NOT for film-level quality selection**: Shot Markets use USDC staking, not $MONTAGE voting. This separation ensures that film quality decisions are driven by economic conviction rather than token accumulation.
 
 ---
 
 ## 4. Anti-Corruption Measures
 
-Governance integrity requires structural safeguards beyond code — it requires rules that make corruption economically irrational.
+Governance integrity requires structural safeguards beyond code — it requires rules that make corruption economically irrational. The Shot Market model provides inherent economic discipline: backing a bad clip means losing 25% of your stake.
 
 ### Conflict of Interest Rules
-- **Directors cannot vote** on their own film's segment selection
-- **Creators cannot vote** on their own submissions
-- **Voters must disclose** if they have a financial relationship with a submission's creator (enforced via on-chain social graph analysis where possible)
+- **Directors cannot back clips** in their own film's Shot Markets (smart contract enforced)
+- **Creators automatically back their own clip** via the Creator Bond — this is transparent, not a conflict
+- **Backers cannot back multiple clips** in the same shot (must commit to a single choice, forcing conviction)
 
-### Vote Integrity
-- **All vote records are public and on-chain** — anyone can audit any vote at any time
-- **Blind voting**: Submissions are anonymized during the voting period; creator identity is revealed only after votes are finalized
-- **Vote locking**: Once cast, votes cannot be changed (prevents last-minute strategic switching)
+### Market Integrity
+- **All backing records are public and on-chain** — anyone can audit any market at any time
+- **Blind commit-reveal**: Backing amounts and clip choices are hidden during the commit phase; revealed only after commits close. This prevents bandwagoning, last-minute sniping, and strategic herding.
+- **Commitment locking**: Once a commitment hash is submitted, it cannot be changed. Non-reveal forfeits the deposit entirely.
 
 ### Economic Safeguards
-- **Maximum voting power cap**: 5% per address per decision (see Section 3)
-- **Stake slashing**: Voters who consistently support submissions that are later flagged for Standard Library non-compliance lose a portion of their staked $MONTAGE
+- **Quadratic backing weight**: The primary anti-whale mechanism. Broad community consensus always outweighs concentrated capital (see Section 2.2).
+- **Maximum single-address backing**: 5,000 USDC per backer per clip (prevents extreme concentration beyond quadratic dampening)
+- **Non-reveal penalty**: Failing to reveal during the reveal phase forfeits the entire deposit to the reward pool. This prevents strategic abstention.
+- **Challenge Bond (2×)**: Replacement challenges require double the Creator Bond, discouraging frivolous challenges against incumbent clips.
 - **Appeal bond**: 10 $MONTAGE stake required to appeal (prevents frivolous appeals; slashed on loss)
 
-### Delegation
-- Vote delegation is allowed — token holders can delegate their voting power to trusted curators
+### Platform Governance Delegation
+- $MONTAGE vote delegation is allowed for platform-level governance — token holders can delegate their voting power to trusted representatives
 - Delegation is revocable at any time
 - Delegates cannot re-delegate (no delegation chains)
+- Delegation does **not** apply to Shot Markets (backing requires direct USDC deposits, not delegated tokens)
 
 ---
 
@@ -207,13 +246,13 @@ OpenMontage follows a deliberate path from centralized control to full community
 - **Commitments**: All multi-sig actions logged publicly; monthly governance transparency reports
 
 ### Phase 2: Hybrid Governance (Q4 2026)
-- **Control**: Multi-sig for platform operations; token-weighted governance for film-level decisions
-- **Community role**: Binding votes on segment merges and film parameters; advisory votes on platform changes
-- **Rationale**: Film-level decisions are lower-risk and benefit from decentralization first. Platform-level decisions still need team oversight during mainnet stabilization.
+- **Control**: Multi-sig for platform operations; Shot Market competition tools (economic backing) available for all film projects
+- **Community role**: Platform governance proposals via $MONTAGE token-weighted voting for fee structures, feature priorities; Shot Markets handle all film-level clip selection independently
+- **Rationale**: Film-level decisions operate autonomously via Shot Markets from day one. Platform-level governance begins transitioning from team oversight to token-weighted community input during mainnet stabilization.
 
 ### Phase 3: Full DAO (2027)
 - **Control**: On-chain Governor contract for all platform governance; multi-sig retained only for emergency pause
-- **Community role**: Binding votes on all decisions — platform fees, treasury allocation, contract upgrades, and film-level governance
+- **Community role**: Binding votes on all platform decisions — platform fees, treasury allocation, contract upgrades; expanded platform governance scope includes parameter updates and grant programs. Film-level clip selection continues via Shot Markets (unchanged)
 - **Rationale**: Protocol is stable, audited, and battle-tested. Community has developed sufficient governance expertise.
 - **Transition**: Multi-sig signers publicly commit to executing all DAO-approved proposals; emergency pause authority transfers to DAO with a fast-track voting mechanism (24h quorum, 67% threshold)
 
@@ -248,12 +287,12 @@ Trust in governance requires radical transparency. OpenMontage commits to the fo
 
 ## Conclusion
 
-OpenMontage governance is designed to be **fair, transparent, and progressively decentralized**. By separating film-level creative decisions from platform-level economic decisions, capping voting power, requiring on-chain transparency, and following a deliberate decentralization timeline, the protocol ensures that governance serves the community rather than any single stakeholder.
+OpenMontage governance is designed to be **fair, transparent, and progressively decentralized**. By separating film-level quality selection (Shot Markets with economic staking) from platform-level governance ($MONTAGE token voting), requiring on-chain transparency, and following a deliberate decentralization timeline, the protocol ensures that governance serves the community rather than any single stakeholder.
 
-The ultimate goal: a self-sustaining ecosystem where films improve through merit-based competition, creators earn proportionally to their contributions, and governance decisions reflect the collective wisdom of active participants — not the capital concentration of passive holders.
+The Shot Market model replaces opinion-based voting with economic skin-in-the-game. Backers who consistently identify the best clips earn returns; those who back mediocre work lose a portion of their stake. Quadratic backing weight ensures that crowd wisdom always outweighs whale capital. The result: a self-sustaining ecosystem where films improve through merit-based economic competition, creators earn proportionally to their contributions, and quality judgments reflect genuine community conviction — not the capital concentration of passive holders.
 
 ---
 
-**Version**: 1.0
-**Last Updated**: 2026-03-03
+**Version**: 1.1
+**Last Updated**: 2026-03-04
 **Authors**: OpenMontage Core Team

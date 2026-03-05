@@ -23,24 +23,25 @@ AI video tools have made it possible for anyone to generate cinematic footage �
 
 - **Standard Library** — Every film ships a dependency package (character LoRAs, style guides, voice models) so all contributors produce visually consistent output
 - **Pull Request workflow** — Creators claim shots, generate segments with AI tools, and submit for community review
+- **Shot Market Menu Auctions** — Backers submit sealed valuation menus across all competing clips per shot; highest quadratic-weighted SelectionWeight wins — broad community support beats concentrated capital
 - **Merit-based earnings** — 75% of revenue goes to creators, split by screen time. Your clip earns as long as it's in the final cut
 - **Living films** — Better segments can replace older ones. Films improve as AI technology advances
 
 ## How It Works
 
-1. **Director** uploads a script and decomposes it into individual shots
-2. **Creators** generate video segments using AI tools (Sora, Runway, Kling, ComfyUI) with the film's Standard Library
-3. **Community** backs clips in Shot Markets to select the best version of each shot
+1. **Director** uploads a script, decomposes it into individual shots, and builds the Standard Library
+2. **Creators** claim shots and generate video segments using AI tools (Sora, Runway, Kling, ComfyUI) with the film's Standard Library
+3. **Community** backs clips in Shot Market Menu Auctions (sealed-bid commit-reveal) to select the best version of each shot
 4. **Platform** assembles the winning segments into a seamless film
-5. **Revenue** splits automatically: 75% creators, 10% Film NFT holder, 5% Standard Library contributors, 10% backers
+5. **Revenue** splits automatically: 75% creators / 10% Film NFT holder / 5% Standard Library contributors / 10% backers
 
-Platform lives on Discord — [join to start contributing](https://discord.gg/SS8BdjYH6W).
+Platform launches on Discord — [join to start contributing](https://discord.gg/SS8BdjYH6W).
 
 ## Current Status
 
 **Pre-Alpha** | Phase 1 Planning | Q2 2026 Launch Target
 
-We're actively building: smart contracts on Base L2, Discord bot, and recruiting pilot film creators.
+We're actively building: smart contracts on Base L2, Discord bot (MontageBot), and recruiting pilot film creators for "Genesis" — a 100-shot sci-fi short film.
 
 ---
 
@@ -50,24 +51,23 @@ We're actively building: smart contracts on Base L2, Discord bot, and recruiting
 Join Discord → `/create-film` → upload your script → build your Standard Library → launch
 
 ### As a Creator (AI Video Artist)
-Join Discord → browse `#film-listings` → claim a shot → submit your work → earn revenue
+Join Discord → browse `#film-listings` → `/claim-shot` → generate with Standard Library → `/submit` → earn revenue
 
 ### As a Backer
-Join Discord → back winning clips → earn from competition rewards and 10% of film streaming revenue
+Join Discord → browse Shot Markets → `/back-shot` (rank-based) or `/back-shot-menu` (explicit valuations) → `/reveal-backing` → earn from competition rewards and 10% of film streaming revenue
 
 ---
 
 ## Documentation
 
-Start with the Whitepaper for the full vision, then Product Mechanism for workflows, and Tokenomics for the economic model. The Contributing Guide is for hands-on participants.
+Start with the **Whitepaper** for the full vision, then dive into the specialized documents for your area of interest.
 
-- [Whitepaper](doc/whitepaper.md) — Full technical architecture and vision
-- [Product Mechanism](doc/product-mechanism.md) — Workflows, Standard Library, version control
-- [Tokenomics](doc/tokenomics.md) — NFT ownership and revenue distribution
-- [Discord Platform](doc/discord-platform.md) — Discord server design and bot commands
-- [Governance](doc/governance.md) — Voting mechanics and governance framework
-- [Roadmap](doc/roadmap.md) — Development timeline and milestones
-- [Competitive Analysis](doc/competitive-analysis.md) — Market landscape
+| Document | Description |
+|----------|-------------|
+| [Whitepaper](doc/whitepaper.md) | Full vision, architecture, economic model, governance — the authoritative overview |
+| [Operations Manual](doc/operations.md) | Discord server, bot commands, director/creator/backer workflows, roadmap, onboarding |
+| [Technical Specification](doc/technical-spec.md) | Smart contracts, storage architecture, API design, security, for developers |
+| [Economics & Governance](doc/economics-governance.md) | NFT economics, Shot Markets, revenue distribution, $MONTAGE token, governance framework |
 
 ## Community
 
@@ -75,7 +75,7 @@ Start with the Whitepaper for the full vision, then Product Mechanism for workfl
 - **Twitter**: [@OpenMontage](https://twitter.com/openmontage)
 - **GitHub**: [github.com/digimads-lab/OpenMontage](https://github.com/digimads-lab/OpenMontage)
 
-Want to contribute? Read our [Contributing Guide](CONTRIBUTING.md).
+New to OpenMontage? Read the [Operations Manual](doc/operations.md) for step-by-step onboarding.
 
 ## License
 
